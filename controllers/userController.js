@@ -1,38 +1,10 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
-
-const createUser = async (req, res) => {
-  try {
-    const { name, email, password, userName, phone } = req.body;
-
-    // בודקים אם המשתמש כבר קיים
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    // מצפינים את הסיסמה
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    const user = new User({
-      name,
-      email,
-      phone,
-      userName,
-      password: hashedPassword,
-    });
-
-    await user.save();
-    res.status(201).json({ message: "User created", user });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+User.syncIndexes();
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ verified: true });
     res.send(users);
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -58,7 +30,7 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, verified: true });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -75,4 +47,4 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getAllUsers, deleteUser, loginUser };
+module.exports = { getAllUsers, deleteUser, loginUser };

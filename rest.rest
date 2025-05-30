@@ -1,15 +1,3 @@
-POST http://localhost:3000/users/create
-Content-Type: application/json
-
-{
-    "name":"shmuel",
-    "email":"shmuel13e@gmail.com",
-    "phone":"0534217016",
-    "password":"11",
-    "userName":"shmuell"
-}
-###
-
 GET http://localhost:3000/users
 
 
@@ -30,4 +18,36 @@ Content-Type: application/json
 {
     "email":"shmuel13e@gmail.com",
     "password":"11"
+}
+
+
+###
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "name":"shmuel",
+    "email":"shmuellk@gmail.com",
+    "phone":"0534217016",
+    "password":"11",
+    "userName":"shmuell"
+}
+
+###
+
+POST http://localhost:3000/auth/resend
+Content-Type: application/json
+
+{
+    "email":"shmuellk32@gmail.com"
+}
+
+###
+
+POST http://localhost:3000/auth/verify
+Content-Type: application/json
+
+{
+    "email":"shmuellk32@gmail.com",
+    "code":"674769"
 }
