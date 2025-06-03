@@ -9,7 +9,7 @@ require("dotenv").config();
 
 const userRouter = require("./routers/userRouter");
 const authRoutes = require("./routers/authRoutes");
-const postRoutes = require("./routers/userRouter");
+const postRoutes = require("./routers/postRouter");
 
 const app = express();
 app.use(cors());
