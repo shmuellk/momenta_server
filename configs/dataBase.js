@@ -4,11 +4,9 @@ require("dotenv").config();
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       dbName: "MomentaDB",
     });
-    console.log("Connected to MongoDB Atlas");
+    console.log("Connected to MongoDB Compass");
   } catch (err) {
     console.error("MongoDB connection error:", err);
     process.exit(1);
