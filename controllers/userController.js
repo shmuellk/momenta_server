@@ -47,4 +47,21 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, deleteUser, loginUser };
+const getUsersComplit = async (req, res) => {
+  try {
+    const search = req.body.data;
+    if (!search || search.trim() === "") {
+      return res.status(200).send([]);
+    }
+    const users = await User.find({
+      verified: true,
+      userName: { $regex: search, $options: "i" },
+    });
+
+    res.send(users);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+};
+
+module.exports = { getAllUsers, deleteUser, loginUser, getUsersComplit };
