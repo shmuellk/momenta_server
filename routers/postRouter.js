@@ -30,6 +30,7 @@ router.get("/", postController.getAllPosts);
 
 // GET SINGLE POST
 router.get("/:id", postController.getPostById);
+router.get("/user/:id", postController.getPostsByUserId);
 
 // ADD COMMENT TO POST
 router.post("/:id/comments", express.json(), postController.addComment);

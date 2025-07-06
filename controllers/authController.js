@@ -8,35 +8,56 @@ User.syncIndexes();
 
 const sendVerificationCode = async (req, res) => {
   try {
-    const { name, email, password, userName, phone } = req.body;
+    const { name, email, password, userName, phone, gander } = req.body;
 
-    // אם כבר קיים משתמש עם המייל
-    if (await User.findOne({ email })) {
-      return res.status(400).json({ message: "User already exists" });
+    if (!req.file) {
+      return res.status(400).json({
+        message:
+          "imageProfile is required (field name must be 'imageProfile').",
+      });
     }
 
-    // ניצור משתמש זמני עם verified=false
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const tempUser = new User({
-      name,
-      email,
-      userName,
-      phone,
-      password: hashedPassword,
-      verified: false,
-    });
-    await tempUser.save();
+    // Build the public URL for the uploaded file
+    const host = req.get("host");
+    const protocol = req.protocol;
+    const imageUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
 
-    // נייצר קוד אימות בן 4 ספרות
+    // Check if a user with this email already exists
+    let user = await User.findOne({ email });
+
+    if (user && user.verified) {
+      return res.status(400).json({ message: "User already exists." });
+    }
+
+    // If user doesn't exist, create a new temp user
+    if (!user) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = new User({
+        name,
+        email,
+        userName,
+        phone,
+        password: hashedPassword,
+        gander,
+        profileImage: imageUrl,
+        verified: false,
+      });
+      await user.save();
+    }
+
+    // Remove old verification tokens (optional)
+    await VerificationToken.deleteMany({ userId: user._id });
+
+    // Generate a new 4-digit code
     const code = Math.floor(1000 + Math.random() * 9000).toString();
 
-    // נשמור את הקוד במסד
+    // Save the code in the DB
     await VerificationToken.create({
-      userId: tempUser._id,
+      userId: user._id,
       code,
     });
 
-    // נשלח מייל עם הקוד
+    // Send the email
     await transporter.sendMail({
       to: email,
       subject: "קוד אימות לרישום באפליקציה",
@@ -45,6 +66,7 @@ const sendVerificationCode = async (req, res) => {
 
     res.status(200).json({ message: "Verification code sent to email." });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -88,6 +110,7 @@ const verifyUser = async (req, res) => {
 
     // נמצא את המשתמש הזמני
     const user = await User.findOne({ email });
+    console.log("user = " + user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -101,9 +124,11 @@ const verifyUser = async (req, res) => {
       userId: user._id,
       code,
     });
+
     if (!tokenDoc) {
       return res.status(400).json({ message: "Invalid or expired code" });
     }
+    console.log("tokenDoc = " + tokenDoc);
 
     // עדכנו את המשתמש להיות מאומת
     user.verified = true;
@@ -122,4 +147,8 @@ const verifyUser = async (req, res) => {
   }
 };
 
-module.exports = { verifyUser, sendVerificationCode, resendPinCode };
+module.exports = {
+  verifyUser,
+  sendVerificationCode,
+  resendPinCode,
+};
