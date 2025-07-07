@@ -52,8 +52,8 @@ const getAllPosts = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("userId", "username")
-      .populate("comments.userId", "username");
+      .populate("userId", "userName")
+      .populate("comments.userId", "userName");
 
     const totalCount = await Post.countDocuments();
 
@@ -69,8 +69,8 @@ const getPostById = async (req, res) => {
   try {
     const { id } = req.params;
     const post = await Post.findById(id)
-      .populate("userId", "username")
-      .populate("comments.userId", "username");
+      .populate("userId", "userName")
+      .populate("comments.userId", "userName");
     if (!post) return res.status(404).json({ error: "Post not found" });
     return res.json(post);
   } catch (err) {
@@ -108,8 +108,8 @@ const addComment = async (req, res) => {
     await post.save();
 
     const populated = await Post.findById(id)
-      .populate("userId", "username")
-      .populate("comments.userId", "username");
+      .populate("userId", "userName")
+      .populate("comments.userId", "userName");
     return res.json(populated);
   } catch (err) {
     console.error("Error in addComment controller:", err);

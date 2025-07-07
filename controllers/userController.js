@@ -55,9 +55,9 @@ const loginUser = async (req, res) => {
 };
 
 // --- אוטו-קומפליט לשמות משתמש ---
-const getUsersComplit = async (req, res) => {
+const getUsersComplete = async (req, res) => {
   try {
-    const search = req.body.data;
+    const search = req.body.searchText;
     console.log(search);
 
     if (!search || search.trim() === "") {
@@ -167,7 +167,7 @@ module.exports = {
   deleteUser,
   getUser,
   loginUser,
-  getUsersComplit,
+  getUsersComplete,
   updateUser,
   updateProfileImage,
 };

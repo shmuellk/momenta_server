@@ -8,7 +8,7 @@ User.syncIndexes();
 
 const sendVerificationCode = async (req, res) => {
   try {
-    const { name, email, password, userName, phone, gander } = req.body;
+    const { name, email, password, userName, phone, gender } = req.body;
 
     if (!req.file) {
       return res.status(400).json({
@@ -38,7 +38,7 @@ const sendVerificationCode = async (req, res) => {
         userName,
         phone,
         password: hashedPassword,
-        gander,
+        gender,
         profileImage: imageUrl,
         verified: false,
       });

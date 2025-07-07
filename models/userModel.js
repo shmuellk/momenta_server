@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   userName: { type: String, required: true },
   profileImage: { type: String },
-  gander: { type: String, required: true }, // “זכר” or “נקבה”
+  gender: { type: String, required: true }, // “זכר” or “נקבה”
   password: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   verified: { type: Boolean, default: false },
